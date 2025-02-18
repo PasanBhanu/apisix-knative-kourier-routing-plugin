@@ -108,7 +108,7 @@ Read more about the values applicable to the helm chart here: https://github.com
 
 **Step 3: Export Schema**
 
-Port forward the `apisix-admin` service and visit this api via browser `http://localhost:9080/v1/schema`. You can download the schema file.
+Port forward the `apisix` pod, control port and visit this api via browser `http://localhost:9090/v1/schema`. You can download the schema file.
 
 Create a configmap using the schema file as follows:
 
