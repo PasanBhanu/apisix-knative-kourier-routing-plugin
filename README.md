@@ -142,6 +142,6 @@ config:
       key: schema.json
 
 plugins:
-  - knative-kourier-router
+- knative-kourier-router
 ```
 
