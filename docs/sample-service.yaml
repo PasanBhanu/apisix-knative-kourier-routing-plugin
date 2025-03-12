@@ -1,0 +1,19 @@
+name: Test API Domain
+plugins:
+  knative-kourier-router:
+    _meta:
+      disable: false
+    header_name: x-knative-function
+  proxy-rewrite:
+    _meta:
+      disable: false
+    headers:
+      add:
+        host: $2
+        x-api-version: $1
+        x-knative-function: $2.default
+    regex_uri:
+      - /api/(v[^/]+)/([^/]+)/(.*)
+      - /$3
+hosts:
+  - example.com

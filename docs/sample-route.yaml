@@ -1,0 +1,43 @@
+uri: /*
+name: Sample KNative Route
+methods:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - PATCH
+  - HEAD
+  - OPTIONS
+  - CONNECT
+  - TRACE
+  - PURGE
+host: example.com
+plugins:
+  knative-kourier-router:
+    _meta:
+      disable: false
+    header_name: x-knative-function
+  proxy-rewrite:
+    headers:
+      add:
+        host: $2
+        x-api-version: $1
+        x-knative-function: $2.default
+    regex_uri:
+      - /api/(v[^/]+)/([^/]+)/(.*)
+      - /$3
+upstream:
+  timeout:
+    connect: 6
+    send: 6
+    read: 6
+  type: roundrobin
+  scheme: http
+  discovery_type: kubernetes
+  pass_host: pass
+  service_name: kourier-system/kourier-internal:http2
+  keepalive_pool:
+    idle_timeout: 60
+    requests: 1000
+    size: 320
+status: 1

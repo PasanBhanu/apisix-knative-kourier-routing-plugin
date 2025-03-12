@@ -145,3 +145,58 @@ plugins:
 - knative-kourier-router
 ```
 
+### Setup Plugin
+
+Login to APISIX dashboard and start setting up your route.
+
+In the plugins section, you need to configure 2 plugins to enable knative routing.
+
+For the below sample configuration, let's assume the url format is `https://example.com/api/v1/<FUNCTION_NAME>/<ACTUAL_URL>`. 
+
+Above url should be transformed to `https://example.com/<ACTUAL_URL>` and with host header of value `<FUNCTION_NAME>.default`. Proxy rewrite plugin will be used to breakdown the url and construct the url required for knative function and knative-kourier-router-plugin will be used to alter the host header. 
+
+In proxy rewrite plugin, the extracted function name will be added to `x-knative-function` custom header to be used by knative-kourier-router-plugin.
+
+**Step 1: Add Proxy Rewrite**
+
+Enable proxy rewrite and apply below configuration to reformat the url and extract the function name.
+
+```
+headers:
+  add:
+    x-api-version: $1
+    x-knative-function: $2.default
+regex_uri:
+  - /api/(v[^/]+)/([^/]+)/(.*)
+  - /$3
+```
+
+**Step 2: Add KNative Kourier Router Plugin**
+
+Enable knative-kourier-router-plugin to alter the host header.
+
+```
+header_name: x-knative-function
+```
+
+Note: If the URL contains the namespace `default` you can remove the `.default` in proxy rewrite plugin. 
+
+### Examples
+
+Plugin configuration under a service level can be found in [Sample Service](./docs/sample-service.yaml)
+
+Plugin configuration under a route can be found in [Sample Route](./docs/sample-route.yaml)
+
+#### Screensots of Route Configuration in APISIX Dashbaord
+
+Proxy rewrite configuration in route definition.
+
+![](./docs/route-proxy-rewrite.jpg)
+
+Define API backend server as kourier in route.
+
+![](./docs/route-kourier-discovery.jpg)
+
+Route plugin definition.
+
+![](./docs/route-plugin.jpg)
